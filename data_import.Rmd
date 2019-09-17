@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 ```
 
-## Load data
+## Load the litters data
 
 ```{r}
 # read dataset
@@ -21,6 +21,21 @@ litters_data = janitor::clean_names(litters_data)
 
 # view data
 glimpse(litters_data)
+
+```
+
+
+## Load the pups data
+
+```{r}
+# read dataset
+pups_data = read_csv("Data/FAS_pups.csv")
+
+# clean names
+pups_data = janitor::clean_names(pups_data)
+
+# view data
+glimpse(pups_data)
 
 ```
 
