@@ -1,0 +1,26 @@
+---
+title: "Data Import"
+author: "Ford Holland"
+date: "9/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Load data
+
+```{r}
+# read dataset
+litters_data = read_csv("Data/FAS_litters.csv")
+
+# clean names
+litters_data = janitor::clean_names(litters_data)
+
+# view data
+glimpse(litters_data)
+
+```
+
