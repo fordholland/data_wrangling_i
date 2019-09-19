@@ -233,7 +233,7 @@ litters_data %>%
     ## # ... with 2 more variables: pups_dead_birth <dbl>, pups_survive <dbl>
 
 ``` r
-# dont filter ! is.na
+# dont filter !is.na()
 # use drop_na
 litters_data %>% 
   drop_na(gd0_weight)
@@ -286,6 +286,67 @@ litters_data %>%
     ## # ... with 39 more rows, and 3 more variables: pups_dead_birth <dbl>,
     ## #   pups_survive <dbl>, wt_gain <dbl>
 
-## Read in an Excel file
+## Arrange
 
-## Read in SAS file
+``` r
+litters_data %>% 
+  arrange(desc(pups_born_alive))
+```
+
+    ## # A tibble: 49 x 8
+    ##    group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+    ##    <chr> <chr>              <dbl>       <dbl>       <dbl>           <dbl>
+    ##  1 Low7  #102                22.6        43.3          20              11
+    ##  2 Mod8  #5/93               NA          41.1          20              11
+    ##  3 Con7  #1/5/3/83/3-~       NA          NA            20               9
+    ##  4 Con8  #3/83/3-3           NA          NA            20               9
+    ##  5 Con8  #5/4/3/83/3         28          NA            19               9
+    ##  6 Mod7  #103                21.4        42.1          19               9
+    ##  7 Mod7  #4/2/95/2           23.5        NA            19               9
+    ##  8 Mod7  #8/110/3-2          NA          NA            20               9
+    ##  9 Low7  #107                22.6        42.4          20               9
+    ## 10 Low7  #98                 23.8        43.8          20               9
+    ## # ... with 39 more rows, and 2 more variables: pups_dead_birth <dbl>,
+    ## #   pups_survive <dbl>
+
+## Pipe
+
+create a collection of commands
+
+``` r
+litters_data = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = str_to_lower(group)) %>% 
+  drop_na(wt_gain)
+
+litters_data
+```
+
+    ## # A tibble: 31 x 8
+    ##    group litter_number gd0_weight gd18_weight gd_of_birth pups_born_alive
+    ##    <chr> <chr>              <dbl>       <dbl>       <int>           <int>
+    ##  1 con7  #85                 19.7        34.7          20               3
+    ##  2 con7  #1/2/95/2           27          42            19               8
+    ##  3 con7  #5/5/3/83/3-3       26          41.4          19               6
+    ##  4 con7  #5/4/2/95/2         28.5        44.1          19               5
+    ##  5 mod7  #59                 17          33.4          19               8
+    ##  6 mod7  #103                21.4        42.1          19               9
+    ##  7 mod7  #3/82/3-2           28          45.9          20               5
+    ##  8 mod7  #5/3/83/5-2         22.6        37            19               5
+    ##  9 mod7  #106                21.7        37.8          20               5
+    ## 10 mod7  #94/2               24.4        42.9          19               7
+    ## # ... with 21 more rows, and 2 more variables: pups_dead_birth <int>,
+    ## #   wt_gain <dbl>
+
+``` r
+# . is last thing that happened in chain of commands
+# this is how you pipe when the fist arg id not data, like grepl
+ex = 
+  read_csv("./data/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names(dat = .) %>% 
+  lm(gd0_weight ~ gd18_weight, data = .)
+```
