@@ -1,21 +1,24 @@
 ---
-title: "Data Import"
+title: "Data Manipulation"
 author: "Ford Holland"
-date: "9/17/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
-library(readxl)
 ```
 
-## Load the litters data
+## Import data
 
 ```{r}
 # read dataset
 litters_data = read_csv("Data/FAS_litters.csv")
+pups_data = read_csv("Data/FAS_pups.csv")
+
+litters_data <- janitor::clean_names(litters_data)
+pups_data <- janitor::clean_names(pups_data)
+
 
 # clean names
 litters_data = janitor::clean_names(litters_data)
@@ -29,56 +32,75 @@ skimr::skim(litters_data)
 ```
 
 
-## Load the pups data
+## Selecting
 
 ```{r}
-# read dataset
-pups_data = read_csv("Data/FAS_pups.csv")
+litters_data %>% 
+  select(litter_number, starts_with("pups"))
 
-# clean names
-pups_data = janitor::clean_names(pups_data)
+# arange
+litters_data %>%
+  select(litter_number, everything())
 
-# view data
-glimpse(pups_data)
+litters_data %>% 
+  select(litter_number, gd0_weight:pups_born_alive)
+
+litters_data %>% 
+  select(-group)
+
+# rename
+litters_data %>% 
+  select(GROUP = group)
 
 ```
 
-## Column types
 
+## Filtering
 ```{r}
-litters_data_types = read_csv(file = "./data/FAS_litters.csv",
-  col_types = cols(
-    Group = col_character(),
-    `Litter Number` = col_character(),
-    `GD0 weight` = col_double(),
-    `GD18 weight` = col_double(),
-    `GD of Birth` = col_integer(),
-    `Pups born alive` = col_integer(),
-    `Pups dead @ birth` = col_integer(),
-    `Pups survive` = col_integer()
-  )
-)
+litters_data %>% 
+  filter(group == "Con7")
 
-glimpse(litters_data_types)
+# can separateconditions by comma
+litters_data %>% 
+  filter(group == "Con7", 
+         pups_born_alive > 2)
+
+# dont filter !is.na()
+# use drop_na
+litters_data %>% 
+  drop_na(gd0_weight)
 ```
 
 
-## Read in an Excel file
+
+
 
 ```{r}
-mlb11_data = read_excel("Data/mlb11.xlsx")
-
-glimpse(mlb11_data)
+# test contains()
+# temp <- as.character(1:100)
+# 
+# contains("5", temp)
 ```
 
 
-## Read in SAS file
+
+## Mutate
 
 ```{r}
-pulse_data = haven::read_sas("Data/public_pulse_data.sas7bdat")
+litters_data %>% 
+  mutate(wt_gain = gd18_weight - gd0_weight,
+         group = group %>% str_to_lower())
 
-glimpse(pulse_data)
 ```
+
+
+## Arrange
+
+```{r}
+litters_data %>% 
+  arrange(desc(pups_born_alive))
+```
+
 
 
 
